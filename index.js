@@ -6,7 +6,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Your Discord webhook (REPLACE THIS)
-const webhookURL = "https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN";
+const webhookURL = "https://discord.com/api/webhooks/1342205786901839999/RnJ5qbDXmy22aeERWWBnuGQg1GR-SzDL4ouIxx1m7OL7cH1z1IOMRD3Gia1Qsnye2M4V";
 
 // Use CORS to allow the frontend to send requests
 app.use(cors());
